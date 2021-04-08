@@ -10,16 +10,15 @@ import com.overeasy.homework.pojo.Post
 
 class MainAdapter : RecyclerView.Adapter<MainAdapter.ViewHolder>() {
     var posts = ArrayList<Post>()
-    val onItemClicked = MutableLiveData<Int>()
+    val onItemClicked = MutableLiveData<Post>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = ItemPostBinding.inflate(inflater, parent, false)
 
         return ViewHolder(binding,
-            onItemClicked = { id ->
-                println("Item is clicked.")
-                onItemClicked.value = id
+            onItemClicked = { post ->
+                onItemClicked.value = post
             })
     }
 
@@ -29,14 +28,14 @@ class MainAdapter : RecyclerView.Adapter<MainAdapter.ViewHolder>() {
 
     inner class ViewHolder(
         private val binding: ItemPostBinding,
-        private val onItemClicked: (Int) -> Unit) : RecyclerView.ViewHolder(binding.root) {
+        private val onItemClicked: (Post) -> Unit) : RecyclerView.ViewHolder(binding.root) {
         fun bind(post: Post) {
             binding.post = post
             binding.viewHolder = this
         }
 
-        fun onClick(id: String) {
-            onItemClicked(id.toDouble().toInt())
+        fun onClick(post: Post) {
+            onItemClicked(post)
         }
     }
 

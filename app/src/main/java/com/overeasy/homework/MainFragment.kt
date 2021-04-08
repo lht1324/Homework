@@ -1,6 +1,7 @@
 package com.overeasy.homework
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,12 +10,11 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.overeasy.homework.databinding.FragmentDetailBinding
-import com.overeasy.homework.pojo.Comment
+import com.overeasy.homework.databinding.FragmentMainBinding
 
 class MainFragment() : Fragment() {
     private lateinit var viewModel: ViewModel
-    private lateinit var binding: FragmentDetailBinding
+    private lateinit var binding: FragmentMainBinding
     private val adapter: MainAdapter by lazy {
         MainAdapter()
     }
@@ -22,15 +22,12 @@ class MainFragment() : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_main, container, false)
 
-        binding.apply {
-            recyclerView.adapter = adapter
-            recyclerView.layoutManager = LinearLayoutManager(activity)
-        }
+        init()
 
         return binding.root
     }
 
-    fun init() {
+    private fun init() {
         viewModel = ViewModelProvider(requireActivity()).get(ViewModel::class.java)
 
         binding.apply {
@@ -45,18 +42,21 @@ class MainFragment() : Fragment() {
                         // 최하단에 도달했을 때 불러온 걸 추가하면 되는 거 아냐
                         // 생각해보니 getPosts() 할 조건은 2개다
                         // Detail View 들어갔다가 나오거나
+                        // viewModel.scrollLoad()
                     }
                 }
             })
         }
-        viewModel.getPosts().observe(this, { posts ->
+        viewModel.getPosts().observe((activity as MainActivity), { posts ->
             adapter.posts = posts
             binding.recyclerView.adapter = adapter
         })
 
-        adapter.onItemClicked.observe(this, { id ->
-
-            viewModel.publishSubject.onNext(id)
+        adapter.onItemClicked.observe((activity as MainActivity), { post ->
+            viewModel.publishSubject.onNext(post)
+            (activity as MainActivity).replaceDetailFragment()
         })
     }
+
+    private fun println(data: String) = Log.d("MainFragment", data)
 }

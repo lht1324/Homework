@@ -11,9 +11,9 @@ class Repository {
 
     fun getDataPosts(start: Int) = client.getDataPosts(start)
 
-    fun getDataComments(id: Int) = client.getDataComments(id)
+    fun getDataComments(post: Post) = client.getDataComments(post)
 
-    fun getPosts() = client.posts
+    fun getPosts() = client.getPosts()
 
-    fun getComments() = client.comments
+    fun getDetailDatas() = client.getDetailDatas()
 }

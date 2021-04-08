@@ -14,7 +14,14 @@ import retrofit2.converter.gson.GsonConverterFactory
 class Client {
     private val baseUrl = "https://jsonplaceholder.typicode.com/"
     val posts = MutableLiveData<ArrayList<Post>>()
-    val comments = MutableLiveData<ArrayList<Comment>>()
+    // val comments = MutableLiveData<ArrayList<Comment>>()
+    val detailDatas = MutableLiveData<ArrayList<Any>>()
+
+    @JvmName("getPosts1")
+    fun getPosts() = posts
+
+    @JvmName("getDetailDatas1")
+    fun getDetailDatas() = detailDatas
 
     fun getDataPosts(start: Int) = getPost().getPostsPage(start, 10)
         .enqueue(object : retrofit2.Callback<Any> {
@@ -27,11 +34,10 @@ class Client {
             }
         })
 
-    fun getDataComments(id: Int) = getPost().getComments(id.toString())
+    fun getDataComments(post: Post) = getPost().getComments(post.id.toDouble().toInt().toString())
         .enqueue(object : retrofit2.Callback<Any> {
             override fun onResponse(call: Call<Any>, response: Response<Any>) {
-                println("id = $id")
-                comments.value = Parser.parseComments(response.body().toString())
+                detailDatas.value = Parser.parseComments(response.body().toString(), post)
             }
 
             override fun onFailure(call: Call<Any>, t: Throwable) {
@@ -69,7 +75,7 @@ class Client {
 
         fun parsePost(response: String) = gson.fromJson(response, Post::class.java)
 
-        fun parseComments(response: String): ArrayList<Comment> {
+        fun parseComments(response: String, post: Post): ArrayList<Any> {
             val responseTemp = response.replace("}, {", "},{")
                 .replace("{", "{\"")
                 .replace("=", "\"=\"")
@@ -77,14 +83,17 @@ class Client {
                 .replace("}", "\"}")
                 .replace("},{", "}, {")
 
-            println("responseTemp = $responseTemp")
             val jsonArray = JSONArray(responseTemp)
             val comments = ArrayList<Comment>()
 
             for (i in 0 until jsonArray.length())
                 comments.add(gson.fromJson(jsonArray.getJSONObject(i).toString(), Comment::class.java))
 
-            return comments
+            val detailDatas = ArrayList<Any>()
+            detailDatas.add(comments)
+            detailDatas.add(post)
+
+            return detailDatas
         }
     }
 

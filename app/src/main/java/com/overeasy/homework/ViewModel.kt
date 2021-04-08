@@ -13,18 +13,23 @@ import io.reactivex.rxjava3.subjects.PublishSubject
 class ViewModel(application: Application) : ViewModel() {
     private val posts = MutableLiveData<ArrayList<Post>>()
     private val comments = MutableLiveData<ArrayList<Comment>>()
+    private val detailDatas = MutableLiveData<ArrayList<Any>>() // comments, post
     private val repository: Repository by lazy {
         Repository()
     }
-    val publishSubject: PublishSubject<Int> = PublishSubject.create()
+    val publishSubject: PublishSubject<Post> = PublishSubject.create()
+    private lateinit var post: Post
+    private var start = 0
 
     fun getPosts() = posts
 
+    fun getDetailDatas() = detailDatas
+
     fun getComments() = comments
 
-    private fun getDataPosts(start: Int) = repository.getDataPosts(start)
+    private fun getDataPosts() = repository.getDataPosts(start)
 
-    private fun getDataComments(id: Int) = repository.getDataComments(id)
+    private fun getDataComments(post: Post) = repository.getDataComments(post)
 
     class Factory(private val application: Application) : ViewModelProvider.Factory {
         override fun <T : ViewModel?> create(modelClass: Class<T>): T{
@@ -33,16 +38,21 @@ class ViewModel(application: Application) : ViewModel() {
     }
 
     init {
-        getDataPosts(0)
+        getDataPosts()
         repository.getPosts().observeForever {
             posts.value = it
         }
-        repository.getComments().observeForever {
-            comments.value = it
+        repository.getDetailDatas().observeForever {
+            detailDatas.value = it
         }
-        publishSubject.subscribe { id ->
-            getDataComments(id)
+        publishSubject.subscribe { post ->
+            getDataComments(post)
         }
+    }
+
+    fun scrollLoad() {
+        start += 10
+        getDataPosts()
     }
 
     private fun println(data: String) = Log.d("ViewModel", data)
