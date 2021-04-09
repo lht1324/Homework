@@ -18,7 +18,7 @@ class DetailFragment : Fragment() {
     private lateinit var viewModel: ViewModel
     private lateinit var binding: FragmentDetailBinding
     private lateinit var callback: OnBackPressedCallback
-    private val adapter: DetailAdapter by lazy {
+    private val detailAdapter: DetailAdapter by lazy {
         DetailAdapter()
     }
 
@@ -69,14 +69,14 @@ class DetailFragment : Fragment() {
         viewModel.getComments()
 
         binding.apply {
-            recyclerView.adapter = adapter
+            recyclerView.adapter = detailAdapter
             recyclerView.layoutManager = LinearLayoutManager(activity)
             recyclerView.addItemDecoration(RecyclerViewDecoration(30))
         }
         // Observable.merge로 Post랑 Comments 동시에 묶어서 열어야 하나?
 
         viewModel.getDetailDatas().observe((activity as MainActivity), { detailDatas ->
-            adapter.comments = detailDatas[0] as ArrayList<Comment>
+            detailAdapter.comments = detailDatas[0] as ArrayList<Comment>
             binding.apply {
                 progressBar.apply {
                     isIndeterminate = false
@@ -84,7 +84,7 @@ class DetailFragment : Fragment() {
                 }
                 constraintLayout.visibility = View.VISIBLE
                 post = detailDatas[1] as Post
-                recyclerView.adapter = adapter
+                recyclerView.adapter = detailAdapter
             }
         })
     }

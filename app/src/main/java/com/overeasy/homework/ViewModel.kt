@@ -18,8 +18,6 @@ class ViewModel(application: Application) : ViewModel() {
         Repository()
     }
     val publishSubject: PublishSubject<Post> = PublishSubject.create()
-    private lateinit var post: Post
-    private var start = 0
 
     fun getPosts() = posts
 
@@ -27,7 +25,7 @@ class ViewModel(application: Application) : ViewModel() {
 
     fun getComments() = comments
 
-    private fun getDataPosts() = repository.getDataPosts(start)
+    private fun getDataPosts(start: Int) = repository.getDataPosts(start)
 
     private fun getDataComments(post: Post) = repository.getDataComments(post)
 
@@ -38,7 +36,7 @@ class ViewModel(application: Application) : ViewModel() {
     }
 
     init {
-        getDataPosts()
+        getDataPosts(0)
         repository.getPosts().observeForever {
             posts.value = it
         }
@@ -50,9 +48,8 @@ class ViewModel(application: Application) : ViewModel() {
         }
     }
 
-    fun scrollLoad() {
-        start += 10
-        getDataPosts()
+    fun scrollLoad(page: Int) {
+        getDataPosts(page * 10)
     }
 
     private fun println(data: String) = Log.d("ViewModel", data)

@@ -4,7 +4,7 @@
     <data>
         <variable
             name="viewHolder"
-            type="com.overeasy.homework.MainAdapter.ViewHolder" />
+            type="com.overeasy.homework.MainAdapter.ItemViewHolder" />
         <variable
             name="post"
             type="com.overeasy.homework.pojo.Post" />

@@ -13,6 +13,12 @@ import com.overeasy.homework.databinding.ActivityMainBinding
 class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: ViewModel
     private lateinit var binding: ActivityMainBinding
+    private val mainFragment by lazy {
+        MainFragment()
+    }
+    private val detailFragment by lazy {
+        DetailFragment()
+    }
     // 비동기로 처리해야 할 것
     // UI 제외한 나머지
     // 네트워킹, 데이터 받아오기
@@ -33,8 +39,8 @@ class MainActivity : AppCompatActivity() {
 
         supportFragmentManager
             .beginTransaction()
-            .add(R.id.constraintLayout, MainFragment())
-            .commitNowAllowingStateLoss()
+            .add(R.id.constraintLayout, mainFragment)
+            .commit()
     }
 
     fun replaceDetailFragment() {
@@ -45,10 +51,22 @@ class MainActivity : AppCompatActivity() {
         supportActionBar!!.title = "Post"
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
+        // First execution
+        // mainFragment is not null
+        // detailFragment is null
+        // hide mainFragment
+        // show detailFragment
+
         supportFragmentManager
+                .beginTransaction()
+                .hide(mainFragment)
+                .add(R.id.constraintLayout, detailFragment)
+                .addToBackStack(null)
+                .commit()
+        /* supportFragmentManager
             .beginTransaction()
-            .replace(R.id.constraintLayout, detailFragment, "detailFragment")
-            .commit()
+            .replace(R.id.constraintLayout, detailFragment)
+            .commit() */
     }
 
     fun replaceMainFragment() {
@@ -60,9 +78,15 @@ class MainActivity : AppCompatActivity() {
         supportActionBar!!.setDisplayHomeAsUpEnabled(false)
 
         supportFragmentManager
+                .popBackStack()
+        supportFragmentManager
+                .beginTransaction()
+                .show(mainFragment)
+                .commit()
+        /* supportFragmentManager
             .beginTransaction()
-            .replace(R.id.constraintLayout, mainFragment, "mainFragment")
-            .commit()
+            .replace(R.id.constraintLayout, mainFragment)
+            .commit() */
     }
 
     private fun println(data: String) = Log.d("MainActivity", data)
