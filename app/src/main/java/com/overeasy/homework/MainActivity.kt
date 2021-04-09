@@ -13,6 +13,10 @@ import com.overeasy.homework.databinding.ActivityMainBinding
 class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: ViewModel
     private lateinit var binding: ActivityMainBinding
+    // 비동기로 처리해야 할 것
+    // UI 제외한 나머지
+    // 네트워킹, 데이터 받아오기
+    // 네트워킹은 Retrofit으로 했다
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
