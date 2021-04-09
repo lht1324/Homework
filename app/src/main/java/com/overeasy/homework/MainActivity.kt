@@ -51,22 +51,12 @@ class MainActivity : AppCompatActivity() {
         supportActionBar!!.title = "Post"
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
-        // First execution
-        // mainFragment is not null
-        // detailFragment is null
-        // hide mainFragment
-        // show detailFragment
-
         supportFragmentManager
                 .beginTransaction()
                 .hide(mainFragment)
                 .add(R.id.constraintLayout, detailFragment)
                 .addToBackStack(null)
                 .commit()
-        /* supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.constraintLayout, detailFragment)
-            .commit() */
     }
 
     fun replaceMainFragment() {
