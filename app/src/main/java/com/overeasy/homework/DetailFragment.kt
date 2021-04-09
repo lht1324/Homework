@@ -76,13 +76,6 @@ class DetailFragment : Fragment() {
         // Observable.merge로 Post랑 Comments 동시에 묶어서 열어야 하나?
 
         viewModel.getDetailDatas().observe((activity as MainActivity), { detailDatas ->
-            val temp = detailDatas[0] as ArrayList<Comment>
-            for (i in temp.indices) {
-                println("comments[$i]")
-                println("comments[$i].name = ${temp[i].name}")
-                println("comments[$i].email = ${temp[i].email}")
-                println("comments[$i].body = ${temp[i].body}")
-            }
             adapter.comments = detailDatas[0] as ArrayList<Comment>
             binding.apply {
                 progressBar.apply {
