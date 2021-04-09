@@ -32,6 +32,16 @@ class DetailFragment : Fragment() {
         return binding.root
     }
 
+    override fun onResume() {
+        super.onResume()
+        binding.constraintLayout.visibility = View.GONE
+        binding.progressBar.apply {
+            isIndeterminate = true
+            visibility = View.VISIBLE
+        }
+        // onResume 동안 프로그레스 바 보여주기
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         super.onOptionsItemSelected(item)
         if (item.itemId == android.R.id.home)
@@ -69,6 +79,11 @@ class DetailFragment : Fragment() {
         viewModel.getDetailDatas().observe((activity as MainActivity), { detailDatas ->
             adapter.comments = detailDatas[0] as ArrayList<Comment>
             binding.apply {
+                progressBar.apply {
+                    isIndeterminate = false
+                    visibility = View.GONE
+                }
+                constraintLayout.visibility = View.VISIBLE
                 post = detailDatas[1] as Post
                 recyclerView.adapter = adapter
             }

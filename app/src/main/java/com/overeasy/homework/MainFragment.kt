@@ -31,6 +31,10 @@ class MainFragment() : Fragment() {
         viewModel = ViewModelProvider(requireActivity()).get(ViewModel::class.java)
 
         binding.apply {
+            progressBar.apply {
+                isIndeterminate = true
+                visibility = View.VISIBLE
+            }
             recyclerView.adapter = adapter
             recyclerView.layoutManager = LinearLayoutManager(activity)
             recyclerView.addItemDecoration(RecyclerViewDecoration(30))
@@ -50,6 +54,10 @@ class MainFragment() : Fragment() {
         viewModel.getPosts().observe((activity as MainActivity), { posts ->
             adapter.posts = posts
             binding.recyclerView.adapter = adapter
+            binding.progressBar.apply {
+                isIndeterminate = false
+                visibility = View.GONE
+            }
         })
 
         adapter.onItemClicked.observe((activity as MainActivity), { post ->

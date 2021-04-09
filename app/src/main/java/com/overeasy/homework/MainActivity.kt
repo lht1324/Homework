@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager
             .beginTransaction()
             .add(R.id.constraintLayout, MainFragment())
-            .commit()
+            .commitNowAllowingStateLoss()
     }
 
     fun replaceDetailFragment() {
@@ -40,11 +40,10 @@ class MainActivity : AppCompatActivity() {
 
         supportActionBar!!.title = "Post"
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+
         supportFragmentManager
             .beginTransaction()
-            .hide(detailFragment)
-            .replace(R.id.constraintLayout, detailFragment)
-            .show(detailFragment)
+            .replace(R.id.constraintLayout, detailFragment, "detailFragment")
             .commit()
     }
 
@@ -55,17 +54,11 @@ class MainActivity : AppCompatActivity() {
 
         supportActionBar!!.title = "Lorem Ipsum"
         supportActionBar!!.setDisplayHomeAsUpEnabled(false)
+
         supportFragmentManager
             .beginTransaction()
-            .replace(R.id.constraintLayout, mainFragment)
+            .replace(R.id.constraintLayout, mainFragment, "mainFragment")
             .commit()
-    }
-
-    fun showConstraintLayout(show: Boolean) {
-        binding.constraintLayout.visibility = if (show)
-            View.VISIBLE
-        else
-            View.GONE
     }
 
     private fun println(data: String) = Log.d("MainActivity", data)
