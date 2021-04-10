@@ -14,7 +14,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 class Client {
     private val baseUrl = "https://jsonplaceholder.typicode.com/"
     val posts = MutableLiveData<ArrayList<Post>>()
-    // val comments = MutableLiveData<ArrayList<Comment>>()
     val detailDatas = MutableLiveData<ArrayList<Any>>()
 
     @JvmName("getPosts1")
@@ -72,8 +71,6 @@ class Client {
 
             return posts
         }
-
-        fun parsePost(response: String) = gson.fromJson(response, Post::class.java)
 
         fun parseComments(response: String, post: Post): ArrayList<Any> {
             val responseTemp = response.replace("}, {", "},{")

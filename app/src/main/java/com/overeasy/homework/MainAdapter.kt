@@ -16,7 +16,7 @@ class MainAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val posts by lazy {
         ArrayList<Post>()
     }
-    var page = 1
+    var page = 1 // 앱 첫 실행 시 이미 0으로 시작
     val onItemClicked = MutableLiveData<Post>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -43,8 +43,12 @@ class MainAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun getItemViewType(position: Int): Int {
         return when (posts[position].title) {
-            " " -> viewTypeLoading
-            else -> viewTypeItem
+            " " -> {
+                viewTypeLoading
+            }
+            else -> {
+                viewTypeItem
+            }
         }
     }
 
@@ -67,8 +71,6 @@ class MainAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     fun setList(posts: ArrayList<Post>) {
         this.posts.addAll(posts)
-        if (page != 10)
-            this.posts.add(Post(" ", " ", " "))
     }
 
     fun stopLoading() = posts.removeAt(posts.lastIndex)

@@ -14,6 +14,7 @@ class ViewModel(application: Application) : ViewModel() {
     private val posts = MutableLiveData<ArrayList<Post>>()
     private val comments = MutableLiveData<ArrayList<Comment>>()
     private val detailDatas = MutableLiveData<ArrayList<Any>>() // comments, post
+    private var page = 0
     private val repository: Repository by lazy {
         Repository()
     }
@@ -38,6 +39,8 @@ class ViewModel(application: Application) : ViewModel() {
     init {
         getDataPosts(0)
         repository.getPosts().observeForever {
+            if (page != 9)
+                it.add(Post(" ", " ", " "))
             posts.value = it
         }
         repository.getDetailDatas().observeForever {
@@ -49,6 +52,7 @@ class ViewModel(application: Application) : ViewModel() {
     }
 
     fun scrollLoad(page: Int) {
+        this.page = page
         getDataPosts(page * 10)
     }
 

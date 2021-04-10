@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.overeasy.homework.databinding.ActivityMainBinding
+import io.sentry.Sentry
 
 
 class MainActivity : AppCompatActivity() {
@@ -15,9 +16,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val mainFragment by lazy {
         MainFragment()
-    }
-    private val detailFragment by lazy {
-        DetailFragment()
     }
     // 비동기로 처리해야 할 것
     // UI 제외한 나머지
@@ -28,6 +26,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         setContentView(R.layout.activity_main)
+
+        Sentry.captureMessage("testing SDK setup")
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
@@ -44,26 +44,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun replaceDetailFragment() {
-        val detailFragment: DetailFragment by lazy {
-            DetailFragment()
-        }
-
         supportActionBar!!.title = "Post"
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
         supportFragmentManager
                 .beginTransaction()
                 .hide(mainFragment)
-                .add(R.id.constraintLayout, detailFragment)
+                .add(R.id.constraintLayout, DetailFragment())
                 .addToBackStack(null)
                 .commit()
+        println("replaceDetailFragment() is executed.")
     }
 
     fun replaceMainFragment() {
-        val mainFragment: MainFragment by lazy {
-            MainFragment()
-        }
-
         supportActionBar!!.title = "Lorem Ipsum"
         supportActionBar!!.setDisplayHomeAsUpEnabled(false)
 
@@ -73,6 +66,7 @@ class MainActivity : AppCompatActivity() {
                 .beginTransaction()
                 .show(mainFragment)
                 .commit()
+        println("replaceMainFragment() is executed.")
         /* supportFragmentManager
             .beginTransaction()
             .replace(R.id.constraintLayout, mainFragment)

@@ -8,6 +8,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStoreOwner
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.overeasy.homework.databinding.FragmentDetailBinding
 import com.overeasy.homework.pojo.Comment
@@ -65,7 +66,7 @@ class DetailFragment : Fragment() {
     }
 
     private fun init() {
-        viewModel = ViewModelProvider(requireActivity()).get(ViewModel::class.java)
+        viewModel = ViewModelProvider(activity as ViewModelStoreOwner).get(ViewModel::class.java)
         viewModel.getComments()
 
         binding.apply {
@@ -75,7 +76,7 @@ class DetailFragment : Fragment() {
         }
         // Observable.merge로 Post랑 Comments 동시에 묶어서 열어야 하나?
 
-        viewModel.getDetailDatas().observe((activity as MainActivity), { detailDatas ->
+        viewModel.getDetailDatas().observe(viewLifecycleOwner, { detailDatas ->
             detailAdapter.comments = detailDatas[0] as ArrayList<Comment>
             binding.apply {
                 progressBar.apply {

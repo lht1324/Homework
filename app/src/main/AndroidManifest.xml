@@ -18,6 +18,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <meta-data
+            android:name="io.sentry.dsn"
+            android:value="https://f02e97e9577b4dcb94ed9a62c37309d5@o430908.ingest.sentry.io/5713780" />
     </application>
 
 </manifest>
