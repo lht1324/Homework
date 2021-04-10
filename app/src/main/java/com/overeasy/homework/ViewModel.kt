@@ -11,9 +11,6 @@ import com.overeasy.homework.repository.Repository
 import io.reactivex.rxjava3.subjects.PublishSubject
 
 class ViewModel(application: Application) : ViewModel() {
-    private val posts = MutableLiveData<ArrayList<Post>>()
-    private val comments = MutableLiveData<ArrayList<Comment>>()
-    private val detailDatas = MutableLiveData<ArrayList<Any>>() // comments, post
     private var page = 0
     val publishSubject: PublishSubject<Post> = PublishSubject.create()
     val publishSubjectDelete: PublishSubject<Post> = PublishSubject.create()
@@ -21,11 +18,11 @@ class ViewModel(application: Application) : ViewModel() {
         Repository()
     }
 
-    fun getPosts() = posts
+    fun getPosts() = repository.getPosts()
 
-    fun getDetailDatas() = detailDatas
+    fun getDetailDatas() = repository.getDetailDatas()
 
-    fun getComments() = comments
+    fun getResponseCode() = repository.getResponseCode()
 
     private fun getDataPosts(start: Int) = repository.getDataPosts(start)
 
@@ -39,14 +36,6 @@ class ViewModel(application: Application) : ViewModel() {
 
     init {
         getDataPosts(0)
-        repository.getPosts().observeForever {
-            if (page != 9)
-                it.add(Post(" ", " ", " "))
-            posts.value = it
-        }
-        repository.getDetailDatas().observeForever {
-            detailDatas.value = it
-        }
         publishSubject.subscribe { post ->
             getDataComments(post)
         }

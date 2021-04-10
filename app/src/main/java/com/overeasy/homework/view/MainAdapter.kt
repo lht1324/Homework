@@ -71,6 +71,8 @@ class MainAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     fun setList(posts: ArrayList<Post>) {
         this.posts.addAll(posts)
+        if (page < 10)
+            this.posts.add(Post(" ", " ", " "))
     }
 
     fun stopLoading() = posts.removeAt(posts.lastIndex)

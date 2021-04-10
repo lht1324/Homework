@@ -78,9 +78,6 @@ class MainFragment() : Fragment() {
                 })
             }
         }
-
-        viewModel.getPosts().removeObservers(viewLifecycleOwner)
-
         viewModel.getPosts().observe(viewLifecycleOwner, { posts ->
             mainAdapter.setList(posts)
             mainAdapter.notifyItemRangeInserted((mainAdapter.page - 1) * 10 + 1, 10)
@@ -89,6 +86,15 @@ class MainFragment() : Fragment() {
                 isIndeterminate = false
                 visibility = View.GONE
             }
+        })
+
+        viewModel.getResponseCode().observe(viewLifecycleOwner, { responseCode ->
+            showToast(
+                if (responseCode == 200)
+                    "삭제되었습니다.\n(responseCode = $responseCode)"
+                else
+                    "삭제되지 않았습니다.\n(responseCode = $responseCode)"
+            )
         })
 
         mainAdapter.onItemClicked.observe(viewLifecycleOwner, { post ->
@@ -102,4 +108,6 @@ class MainFragment() : Fragment() {
     }
 
     private fun println(data: String) = Log.d("MainFragment", data)
+
+    private fun showToast(data: String) = Toast.makeText(activity, data, Toast.LENGTH_SHORT).show()
 }

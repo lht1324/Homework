@@ -20,4 +20,8 @@ class Repository {
     fun getPosts() = client.getPosts()
 
     fun getDetailDatas() = client.getDetailDatas()
+
+    fun getResponseCode() = client.getResponseCode()
+
+    fun getUpdatedPost() = client.getUpdatedPost()
 }

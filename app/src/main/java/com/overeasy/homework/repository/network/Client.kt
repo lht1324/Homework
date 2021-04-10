@@ -16,15 +16,18 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class Client {
     private val baseUrl = "https://jsonplaceholder.typicode.com/"
-    val posts = MutableLiveData<ArrayList<Post>>()
-    val detailDatas = MutableLiveData<ArrayList<Any>>()
-    val isDeleted = MutableLiveData<Boolean>()
+    private val posts = MutableLiveData<ArrayList<Post>>()
+    private val detailDatas = MutableLiveData<ArrayList<Any>>()
+    private val responseCode = MutableLiveData<Int>()
+    private val updatedPost = MutableLiveData<Post>()
 
-    @JvmName("getPosts1")
     fun getPosts() = posts
 
-    @JvmName("getDetailDatas1")
     fun getDetailDatas() = detailDatas
+
+    fun getResponseCode() = responseCode
+
+    fun getUpdatedPost() = updatedPost
 
     fun getDataPosts(start: Int) = getData().getPostsPage(start, 10)
         .enqueue(object : retrofit2.Callback<ArrayList<Post>> {
@@ -65,7 +68,7 @@ class Client {
     fun deletePost(post: Post) = getData().deletePost(post.id.toDouble().toInt().toString())
         .enqueue(object : retrofit2.Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                isDeleted.value = response.code() == 200
+                responseCode.value = response.code()
                 println("response = $response")
             }
 

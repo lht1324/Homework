@@ -68,7 +68,7 @@ class DetailFragment : Fragment() {
 
     private fun init() {
         viewModel = ViewModelProvider(activity as ViewModelStoreOwner).get(ViewModel::class.java)
-        viewModel.getComments()
+        // viewModel.getDataComments()
 
         binding.apply {
             recyclerView.adapter = detailAdapter
