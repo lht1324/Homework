@@ -13,6 +13,10 @@ class Repository {
 
     fun getDataComments(post: Post) = client.getDataComments(post)
 
+    fun patchPost(post: Post) = client.patchPost(post)
+
+    fun deletePost(post: Post) = client.deletePost(post)
+
     fun getPosts() = client.getPosts()
 
     fun getDetailDatas() = client.getDetailDatas()

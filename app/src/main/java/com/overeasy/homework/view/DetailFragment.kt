@@ -1,4 +1,4 @@
-package com.overeasy.homework
+package com.overeasy.homework.view
 
 import android.content.Context
 import android.os.Bundle
@@ -10,6 +10,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.overeasy.homework.R
+import com.overeasy.homework.ViewModel
 import com.overeasy.homework.databinding.FragmentDetailBinding
 import com.overeasy.homework.pojo.Comment
 import com.overeasy.homework.pojo.Post

@@ -3,6 +3,8 @@ package com.overeasy.homework.repository.network
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
+import com.google.gson.annotations.Expose
+import com.google.gson.annotations.SerializedName
 import com.overeasy.homework.pojo.Comment
 import com.overeasy.homework.pojo.Post
 import org.json.JSONArray
@@ -10,6 +12,7 @@ import retrofit2.Call
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+
 
 class Client {
     private val baseUrl = "https://jsonplaceholder.typicode.com/"
@@ -22,29 +25,54 @@ class Client {
     @JvmName("getDetailDatas1")
     fun getDetailDatas() = detailDatas
 
-    fun getDataPosts(start: Int) = getPost().getPostsPage(start, 10)
-        .enqueue(object : retrofit2.Callback<Any> {
-            override fun onResponse(call: Call<Any>, response: Response<Any>) {
-                posts.value = Parser.parsePosts(response.body().toString())
+    fun getDataPosts(start: Int) = getData().getPostsPage(start, 10)
+        .enqueue(object : retrofit2.Callback<ArrayList<Post>> {
+            override fun onResponse(call: Call<ArrayList<Post>>, response: Response<ArrayList<Post>>) {
+                posts.value = response.body()
             }
 
-            override fun onFailure(call: Call<Any>, t: Throwable) {
+            override fun onFailure(call: Call<ArrayList<Post>>, t: Throwable) {
                 println("onFailure is executed in getDataPosts() of Client.")
             }
         })
 
-    fun getDataComments(post: Post) = getPost().getComments(post.id.toDouble().toInt().toString())
-        .enqueue(object : retrofit2.Callback<Any> {
-            override fun onResponse(call: Call<Any>, response: Response<Any>) {
-                detailDatas.value = Parser.parseComments(response.body().toString(), post)
+    fun getDataComments(post: Post) = getData().getComments(post.id.toDouble().toInt().toString())
+        .enqueue(object : retrofit2.Callback<ArrayList<Comment>> {
+            override fun onResponse(call: Call<ArrayList<Comment>>, response: Response<ArrayList<Comment>>) {
+                val detailDatasTemp = ArrayList<Any>()
+                detailDatasTemp.add(response.body() as ArrayList<Comment>)
+                detailDatasTemp.add(post)
+                detailDatas.value = detailDatasTemp
             }
 
-            override fun onFailure(call: Call<Any>, t: Throwable) {
+            override fun onFailure(call: Call<ArrayList<Comment>>, t: Throwable) {
                 println("onFailure is executed in getDataComments() of Client.")
             }
         })
 
-    private fun getPost(): RetrofitService = Retrofit.Builder()
+    fun patchPost(post: Post) = getData().patchPost(post.id.toDouble().toInt().toString(), post)
+        .enqueue(object : retrofit2.Callback<Post> {
+            override fun onResponse(call: Call<Post>, response: Response<Post>) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onFailure(call: Call<Post>, t: Throwable) {
+                TODO("Not yet implemented")
+            }
+        })
+
+    fun deletePost(post: Post) = getData().deletePost(post.id.toDouble().toInt().toString())
+        .enqueue(object : retrofit2.Callback<Post> {
+            override fun onResponse(call: Call<Post>, response: Response<Post>) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onFailure(call: Call<Post>, t: Throwable) {
+                TODO("Not yet implemented")
+            }
+        })
+
+    private fun getData(): RetrofitService = Retrofit.Builder()
         .baseUrl(baseUrl)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
@@ -84,7 +112,12 @@ class Client {
             val comments = ArrayList<Comment>()
 
             for (i in 0 until jsonArray.length())
-                comments.add(gson.fromJson(jsonArray.getJSONObject(i).toString(), Comment::class.java))
+                comments.add(
+                    gson.fromJson(
+                        jsonArray.getJSONObject(i).toString(),
+                        Comment::class.java
+                    )
+                )
 
             val detailDatas = ArrayList<Any>()
             detailDatas.add(comments)

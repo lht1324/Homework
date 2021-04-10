@@ -1,8 +1,7 @@
-package com.overeasy.homework
+package com.overeasy.homework.view
 
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
@@ -74,6 +73,12 @@ class MainAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     }
 
     fun stopLoading() = posts.removeAt(posts.lastIndex)
+
+    fun onSwiped(position: Int) {
+        println("onSwipe() in mainAdapter is executed.")
+        posts.removeAt(position)
+        notifyItemRemoved(position)
+    }
 
     private fun println(data: String) = Log.d("MainAdapter", data)
 }

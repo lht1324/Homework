@@ -1,6 +1,5 @@
-package com.overeasy.homework
+package com.overeasy.homework.view
 
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,10 +10,12 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.overeasy.homework.R
+import com.overeasy.homework.ViewModel
 import com.overeasy.homework.databinding.FragmentMainBinding
-import com.overeasy.homework.pojo.Post
 
 class MainFragment() : Fragment() {
     private lateinit var viewModel: ViewModel
@@ -38,6 +39,18 @@ class MainFragment() : Fragment() {
     }
 
     private fun init() {
+        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder) = true
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                mainAdapter.onSwiped(viewHolder.adapterPosition)
+
+            }
+        }).attachToRecyclerView(binding.recyclerView)
+
         viewModel = ViewModelProvider(activity as ViewModelStoreOwner).get(ViewModel::class.java)
 
         binding.apply {

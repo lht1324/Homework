@@ -1,4 +1,4 @@
-package com.overeasy.homework
+package com.overeasy.homework.view
 
 import android.graphics.Rect
 import android.view.View

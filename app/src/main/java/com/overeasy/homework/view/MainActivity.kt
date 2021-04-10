@@ -1,14 +1,14 @@
-package com.overeasy.homework
+package com.overeasy.homework.view
 
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
+import com.overeasy.homework.R
+import com.overeasy.homework.ViewModel
 import com.overeasy.homework.databinding.ActivityMainBinding
-import io.sentry.Sentry
 
 
 class MainActivity : AppCompatActivity() {
