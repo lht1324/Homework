@@ -27,8 +27,6 @@ class MainActivity : AppCompatActivity() {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         setContentView(R.layout.activity_main)
 
-        Sentry.captureMessage("testing SDK setup")
-
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
         init()
@@ -53,7 +51,6 @@ class MainActivity : AppCompatActivity() {
                 .add(R.id.constraintLayout, DetailFragment())
                 .addToBackStack(null)
                 .commit()
-        println("replaceDetailFragment() is executed.")
     }
 
     fun replaceMainFragment() {
@@ -66,7 +63,7 @@ class MainActivity : AppCompatActivity() {
                 .beginTransaction()
                 .show(mainFragment)
                 .commit()
-        println("replaceMainFragment() is executed.")
+
         /* supportFragmentManager
             .beginTransaction()
             .replace(R.id.constraintLayout, mainFragment)
