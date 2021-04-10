@@ -31,20 +31,6 @@ class MainFragment() : Fragment() {
         return binding.root
     }
 
-    /* override fun onAttach(context: Context) {
-        super.onAttach(context)
-        println("onAttach() is executed. posts")
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        println("onDetach() is executed. posts")
-    } */
-
-    override fun onResume() {
-        super.onResume()
-    }
-
     override fun onPause() {
         super.onPause()
         viewModel.getPosts().removeObservers(viewLifecycleOwner)
@@ -69,8 +55,6 @@ class MainFragment() : Fragment() {
                         super.onScrolled(recyclerView, dx, dy)
 
                         if (!recyclerView.canScrollVertically(1)) { // 끝까지 스크롤 했을 때
-                            // 페이지가 9 미만이면 로드
-                            // 아니면 로드 안 하고 토스트
                             if (mainAdapter.page < 10) { // 마지막 페이지에선 mainAdapter.page == 10
                                 mainAdapter.stopLoading()
                                 viewModel.scrollLoad((mainAdapter.page)++)
@@ -86,10 +70,9 @@ class MainFragment() : Fragment() {
         viewModel.getPosts().removeObservers(viewLifecycleOwner)
 
         viewModel.getPosts().observe(viewLifecycleOwner, { posts ->
-            println("page ${mainAdapter.page}'s id is ${posts[0].id}")
             mainAdapter.setList(posts)
             mainAdapter.notifyItemRangeInserted((mainAdapter.page - 1) * 10 + 1, 10)
-            // positionStart부터 몇 개가 들어가느냐를 알리는 것이니 start는 기존 마지막 인덱스 + 1이어야 한다.
+            // positionStart부터 몇 개가 들어가느냐를 알리는 것이니 start는 (기존 posts의 마지막 인덱스 + 1)이어야 한다.
             binding.progressBar.apply {
                 isIndeterminate = false
                 visibility = View.GONE

@@ -15,7 +15,6 @@ import com.overeasy.homework.pojo.Comment
 import com.overeasy.homework.pojo.Post
 
 class DetailFragment : Fragment() {
-    // onClick 눌리면 Unit 전송해서 액티비티에서 실행하는 걸로 하자
     private lateinit var viewModel: ViewModel
     private lateinit var binding: FragmentDetailBinding
     private lateinit var callback: OnBackPressedCallback
