@@ -45,10 +45,9 @@ class MainFragment() : Fragment() {
                 viewHolder: RecyclerView.ViewHolder,
                 target: RecyclerView.ViewHolder) = true
 
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                mainAdapter.onSwiped(viewHolder.adapterPosition)
-
-            }
+            override fun onSwiped(
+                viewHolder: RecyclerView.ViewHolder,
+                direction: Int) = mainAdapter.onSwiped(viewHolder.adapterPosition)
         }).attachToRecyclerView(binding.recyclerView)
 
         viewModel = ViewModelProvider(activity as ViewModelStoreOwner).get(ViewModel::class.java)
@@ -95,6 +94,10 @@ class MainFragment() : Fragment() {
         mainAdapter.onItemClicked.observe(viewLifecycleOwner, { post ->
             viewModel.publishSubject.onNext(post)
             (activity as MainActivity).replaceDetailFragment()
+        })
+
+        mainAdapter.onItemSwiped.observe(viewLifecycleOwner, { post ->
+            viewModel.publishSubjectDelete.onNext(post)
         })
     }
 

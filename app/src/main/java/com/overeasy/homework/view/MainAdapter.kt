@@ -17,6 +17,7 @@ class MainAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     }
     var page = 1 // 앱 첫 실행 시 이미 0으로 시작
     val onItemClicked = MutableLiveData<Post>()
+    val onItemSwiped = MutableLiveData<Post>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
@@ -75,7 +76,7 @@ class MainAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     fun stopLoading() = posts.removeAt(posts.lastIndex)
 
     fun onSwiped(position: Int) {
-        println("onSwipe() in mainAdapter is executed.")
+        onItemSwiped.value = posts[position]
         posts.removeAt(position)
         notifyItemRemoved(position)
     }

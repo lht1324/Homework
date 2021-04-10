@@ -18,6 +18,7 @@ class Client {
     private val baseUrl = "https://jsonplaceholder.typicode.com/"
     val posts = MutableLiveData<ArrayList<Post>>()
     val detailDatas = MutableLiveData<ArrayList<Any>>()
+    val isDeleted = MutableLiveData<Boolean>()
 
     @JvmName("getPosts1")
     fun getPosts() = posts
@@ -50,7 +51,7 @@ class Client {
             }
         })
 
-    fun patchPost(post: Post) = getData().patchPost(post.id.toDouble().toInt().toString(), post)
+    fun updatePost(post: Post) = getData().patchPost(post.id.toDouble().toInt().toString(), post)
         .enqueue(object : retrofit2.Callback<Post> {
             override fun onResponse(call: Call<Post>, response: Response<Post>) {
                 TODO("Not yet implemented")
@@ -62,13 +63,14 @@ class Client {
         })
 
     fun deletePost(post: Post) = getData().deletePost(post.id.toDouble().toInt().toString())
-        .enqueue(object : retrofit2.Callback<Post> {
-            override fun onResponse(call: Call<Post>, response: Response<Post>) {
-                TODO("Not yet implemented")
+        .enqueue(object : retrofit2.Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                isDeleted.value = response.code() == 200
+                println("response = $response")
             }
 
-            override fun onFailure(call: Call<Post>, t: Throwable) {
-                TODO("Not yet implemented")
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                println("onFailure() is executed in deletePost() of Client.")
             }
         })
 
@@ -77,55 +79,6 @@ class Client {
         .addConverterFactory(GsonConverterFactory.create())
         .build()
         .create(RetrofitService::class.java)
-
-    object Parser {
-        private val gson = Gson()
-
-        fun parsePosts(response: String): ArrayList<Post> {
-            val responseTemp = response.replace("}, {", "},{")
-                .replace("{", "{\"") // { 오른쪽
-                .replace("=", "\"=\"") // = 왼쪽 오른쪽
-                .replace(", ", "\", \"") // ", " 왼쪽 오른쪽 (이 경우엔 }와 { 사이에 ", "가 있다면 제외)
-                .replace("}", "\"}") // } 왼쪽
-                .replace("},{", "}, {")
-            // json의 value가 String일 때 공백을 포함하고 있으면
-            // 'JSONException:Unterminated object..." 에러가 공백 다음 2번째 글자에서 발생
-
-            val jsonArray = JSONArray(responseTemp)
-            val posts = ArrayList<Post>()
-
-            for (i in 0 until jsonArray.length())
-                posts.add(gson.fromJson(jsonArray.getJSONObject(i).toString(), Post::class.java))
-
-            return posts
-        }
-
-        fun parseComments(response: String, post: Post): ArrayList<Any> {
-            val responseTemp = response.replace("}, {", "},{")
-                .replace("{", "{\"")
-                .replace("=", "\"=\"")
-                .replace(", ", "\", \"")
-                .replace("}", "\"}")
-                .replace("},{", "}, {")
-
-            val jsonArray = JSONArray(responseTemp)
-            val comments = ArrayList<Comment>()
-
-            for (i in 0 until jsonArray.length())
-                comments.add(
-                    gson.fromJson(
-                        jsonArray.getJSONObject(i).toString(),
-                        Comment::class.java
-                    )
-                )
-
-            val detailDatas = ArrayList<Any>()
-            detailDatas.add(comments)
-            detailDatas.add(post)
-
-            return detailDatas
-        }
-    }
 
     fun println(data: String) = Log.d("Client", data)
 }

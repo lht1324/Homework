@@ -20,5 +20,5 @@ interface RetrofitService {
     fun patchPost(@Path("id") id: String, @Body post: Post): Call<Post>
 
     @DELETE("posts/{id}")
-    fun deletePost(id: String): Call<Post>
+    fun deletePost(@Path("id") id: String): Call<Void>
 }
