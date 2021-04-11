@@ -78,7 +78,6 @@ class MainAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
         override fun onLongClick(view: View?): Boolean {
             onItemLongPressed(binding.post!!)
-            println("Item ${binding.post!!.id} is pressed.")
             return true
         }
     }

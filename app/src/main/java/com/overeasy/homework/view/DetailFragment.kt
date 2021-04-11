@@ -27,6 +27,7 @@ class DetailFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_detail, container, false)
 
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
         setHasOptionsMenu(true)
 
         init()
@@ -44,13 +45,6 @@ class DetailFragment : Fragment() {
         // onResume 동안 프로그레스 바 보여주기
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        super.onOptionsItemSelected(item)
-        if (item.itemId == android.R.id.home)
-                (activity as MainActivity).replaceMainFragment()
-        return true
-    }
-
     override fun onAttach(context: Context) {
         super.onAttach(context)
         callback = object : OnBackPressedCallback(true) {
@@ -58,7 +52,6 @@ class DetailFragment : Fragment() {
                 (activity as MainActivity).replaceMainFragment()
             }
         }
-        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
     }
 
     override fun onDetach() {
@@ -66,9 +59,16 @@ class DetailFragment : Fragment() {
         callback.remove()
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        super.onOptionsItemSelected(item)
+        if (item.itemId == android.R.id.home) {
+            (activity as MainActivity).replaceMainFragment()
+        }
+        return true
+    }
+
     private fun init() {
         viewModel = ViewModelProvider(activity as ViewModelStoreOwner).get(ViewModel::class.java)
-        // viewModel.getDataComments()
 
         binding.apply {
             recyclerView.adapter = detailAdapter

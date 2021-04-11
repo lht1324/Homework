@@ -19,10 +19,6 @@ class MainActivity : AppCompatActivity() {
         MainFragment()
     }
     private var backPressedLast: Long = 0
-    // 비동기로 처리해야 할 것
-    // UI 제외한 나머지
-    // 네트워킹, 데이터 받아오기
-    // 네트워킹은 Retrofit으로 했다
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,7 +30,7 @@ class MainActivity : AppCompatActivity() {
         init()
     }
 
-    override fun onBackPressed() {
+    fun onBackPressedFragment() {
         if (System.currentTimeMillis() - backPressedLast < 2000) {
             finish()
             return
@@ -75,11 +71,6 @@ class MainActivity : AppCompatActivity() {
                 .beginTransaction()
                 .show(mainFragment)
                 .commit()
-
-        /* supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.constraintLayout, mainFragment)
-            .commit() */
     }
 
     private fun println(data: String) = Log.d("MainActivity", data)

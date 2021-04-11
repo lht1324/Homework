@@ -1,5 +1,6 @@
 package com.overeasy.homework.view
 
+import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -8,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -23,6 +25,7 @@ import com.overeasy.homework.pojo.Post
 class MainFragment() : Fragment() {
     private lateinit var viewModel: ViewModel
     private lateinit var binding: FragmentMainBinding
+    private lateinit var callback: OnBackPressedCallback
     private val mainAdapter: MainAdapter by lazy {
         MainAdapter()
     }
@@ -35,13 +38,23 @@ class MainFragment() : Fragment() {
         return binding.root
     }
 
-    override fun onPause() {
-        super.onPause()
-        viewModel.getPosts().removeObservers(viewLifecycleOwner)
-        mainAdapter.onItemClicked.removeObservers(viewLifecycleOwner)
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                (activity as MainActivity).onBackPressedFragment()
+            }
+        }
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        callback.remove()
     }
 
     private fun init() {
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+
         ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
             override fun onMove(
                 recyclerView: RecyclerView,
@@ -115,6 +128,7 @@ class MainFragment() : Fragment() {
 
         mainAdapter.onItemClicked.observe(viewLifecycleOwner, { post ->
             viewModel.publishSubject.onNext(post)
+            callback.remove()
             (activity as MainActivity).replaceDetailFragment()
         })
 
@@ -132,8 +146,10 @@ class MainFragment() : Fragment() {
         updateDialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         updateDialog.post = post
         updateDialog.setOnDismissListener {
-            mainAdapter.updatedPosition = updateDialog.post.id.toDouble().toInt() - 1
-            viewModel.publishSubjectUpdate.onNext(updateDialog.post)
+            if (post.title != updateDialog.post.title && post.body != updateDialog.post.body) {
+                mainAdapter.updatedPosition = updateDialog.post.id.toDouble().toInt() - 1
+                viewModel.publishSubjectUpdate.onNext(updateDialog.post)
+            } // 내용을 바꾸지 않고 꾹 누르기만 한 경우 제외
         }
         updateDialog.setCancelable(true)
         updateDialog.show()

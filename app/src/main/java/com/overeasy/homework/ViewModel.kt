@@ -11,26 +11,12 @@ import com.overeasy.homework.repository.Repository
 import io.reactivex.rxjava3.subjects.PublishSubject
 
 class ViewModel(application: Application) : ViewModel() {
-    private var page = 0
-    private val posts = ArrayList<Post>()
     val publishSubject: PublishSubject<Post> = PublishSubject.create()
     val publishSubjectUpdate: PublishSubject<Post> = PublishSubject.create()
     val publishSubjectDelete: PublishSubject<Post> = PublishSubject.create()
     private val repository: Repository by lazy {
         Repository()
     }
-
-    fun getPosts() = repository.getPosts()
-
-    fun getDetailDatas() = repository.getDetailDatas()
-
-    fun getDeleteResult() = repository.getDeleteResult()
-
-    fun getUpdateResult() = repository.getUpdateResult()
-
-    private fun getDataPosts(start: Int) = repository.getDataPosts(start)
-
-    private fun getDataComments(post: Post) = repository.getDataComments(post)
 
     class Factory(private val application: Application) : ViewModelProvider.Factory {
         override fun <T : ViewModel?> create(modelClass: Class<T>): T{
@@ -51,10 +37,19 @@ class ViewModel(application: Application) : ViewModel() {
         }
     }
 
-    fun scrollLoad(page: Int) {
-        this.page = page
-        getDataPosts(page * 10)
-    }
+    fun getPosts() = repository.getPosts()
+
+    fun getDetailDatas() = repository.getDetailDatas()
+
+    fun getDeleteResult() = repository.getDeleteResult()
+
+    fun getUpdateResult() = repository.getUpdateResult()
+
+    private fun getDataPosts(start: Int) = repository.getDataPosts(start)
+
+    private fun getDataComments(post: Post) = repository.getDataComments(post)
+
+    fun scrollLoad(page: Int) = getDataPosts(page * 10)
 
     private fun updatePost(post: Post) = repository.updatePost(post)
 
