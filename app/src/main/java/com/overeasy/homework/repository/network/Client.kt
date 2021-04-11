@@ -1,31 +1,29 @@
 package com.overeasy.homework.repository.network
 
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
-import com.google.gson.Gson
-import com.google.gson.annotations.Expose
-import com.google.gson.annotations.SerializedName
-import com.overeasy.homework.pojo.Comment
 import com.overeasy.homework.pojo.Post
-import org.json.JSONArray
-import retrofit2.Call
+import io.reactivex.Single
 import retrofit2.Response
 import retrofit2.Retrofit
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 
 
 class Client {
     private val baseUrl = "https://jsonplaceholder.typicode.com/"
-    private val posts = MutableLiveData<ArrayList<Post>>()
-    private val detailDatas = MutableLiveData<ArrayList<Any>>()
-    private val deleteResult = MutableLiveData<Int>()
-    private val updateResult = MutableLiveData<ArrayList<Any>>()
 
-    fun getPosts() = posts
+    fun getPosts(start: Int): Single<Response<ArrayList<Post>>> {
+        println("getPosts() in Client is executed.")
+        return getData().getPostsPage(start, 10)
+    }
 
-    fun getDetailDatas() = detailDatas
+    fun getComments(id: Int) = getData().getComments(id)
 
-    fun getDeleteResult() = deleteResult
+    fun updatePost(id: Int, post: Post) = getData().updatePost(id, post)
+
+    fun deletePost(id: Int) = getData().deletePost(id)
+
+    /* fun getDeleteResult() = deleteResult
 
     fun getUpdateResult() = updateResult
 
@@ -38,9 +36,9 @@ class Client {
             override fun onFailure(call: Call<ArrayList<Post>>, t: Throwable) {
                 println("onFailure() is executed in getDataPosts() of Client.")
             }
-        })
+        }) */
 
-    fun getDataComments(post: Post) = getData().getComments(post.id.toDouble().toInt().toString())
+    /* fun getDataComments(post: Post) = getData().getComments(post.id.toDouble().toInt().toString())
         .enqueue(object : retrofit2.Callback<ArrayList<Comment>> {
             override fun onResponse(call: Call<ArrayList<Comment>>, response: Response<ArrayList<Comment>>) {
                 val tempList = ArrayList<Any>()
@@ -79,13 +77,14 @@ class Client {
             override fun onFailure(call: Call<Void>, t: Throwable) {
                 println("onFailure() is executed in deletePost() of Client.")
             }
-        })
+        }) */
 
     private fun getData(): RetrofitService = Retrofit.Builder()
-        .baseUrl(baseUrl)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-        .create(RetrofitService::class.java)
+            .baseUrl(baseUrl)
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(RetrofitService::class.java)
 
-    fun println(data: String) = Log.d("Client", data)
+    private fun println(data: String) = Log.d("Client", data)
 }

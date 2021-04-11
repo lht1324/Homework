@@ -21,6 +21,7 @@ import com.overeasy.homework.R
 import com.overeasy.homework.ViewModel
 import com.overeasy.homework.databinding.FragmentMainBinding
 import com.overeasy.homework.pojo.Post
+import io.reactivex.disposables.Disposable
 
 class MainFragment() : Fragment() {
     private lateinit var viewModel: ViewModel
@@ -94,7 +95,9 @@ class MainFragment() : Fragment() {
                 })
             }
         }
+
         viewModel.getPosts().observe(viewLifecycleOwner, { posts ->
+            println("getPosts() observer is executed.")
             mainAdapter.setList(posts)
             mainAdapter.notifyItemRangeInserted((mainAdapter.page - 1) * 10 + 1, 10)
             // positionStart부터 몇 개가 들어가느냐를 알리는 것이니 start는 (기존 posts의 마지막 인덱스 + 1)이어야 한다.
@@ -105,6 +108,7 @@ class MainFragment() : Fragment() {
         })
 
         viewModel.getDeleteResult().observe(viewLifecycleOwner, { responseCode ->
+            println("getDeleteResult() observer is executed.")
             showToast(
                 if (responseCode == 200)
                     "삭제되었습니다.\n(responseCode = $responseCode)"
@@ -114,6 +118,7 @@ class MainFragment() : Fragment() {
         })
 
         viewModel.getUpdateResult().observe(viewLifecycleOwner, { updatedResult ->
+            println("getUpdateResult() observer is executed.")
             /*
             updatedResult[0] = response.body()
             updatedResult[1] = response.code()
@@ -127,7 +132,7 @@ class MainFragment() : Fragment() {
         })
 
         mainAdapter.onItemClicked.observe(viewLifecycleOwner, { post ->
-            viewModel.publishSubject.onNext(post)
+            viewModel.getDataComments(post)
             callback.remove()
             (activity as MainActivity).replaceDetailFragment()
         })
@@ -136,8 +141,8 @@ class MainFragment() : Fragment() {
             openUpdateDialog(post)
         })
 
-        mainAdapter.onItemSwiped.observe(viewLifecycleOwner, { post ->
-            viewModel.publishSubjectDelete.onNext(post)
+        mainAdapter.onItemSwiped.observe(viewLifecycleOwner, { id ->
+            viewModel.deletePost(id)
         })
     }
 
@@ -145,15 +150,19 @@ class MainFragment() : Fragment() {
         val updateDialog = UpdateDialog(requireActivity())
         updateDialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         updateDialog.post = post
+
         updateDialog.setOnDismissListener {
             if (post.title != updateDialog.post.title && post.body != updateDialog.post.body) {
                 mainAdapter.updatedPosition = updateDialog.post.id.toDouble().toInt() - 1
-                viewModel.publishSubjectUpdate.onNext(updateDialog.post)
+                viewModel.updatePost(updateDialog.post)
             } // 내용을 바꾸지 않고 꾹 누르기만 한 경우 제외
         }
+
         updateDialog.setCancelable(true)
         updateDialog.show()
     }
+
+    fun addDisposable(disposable: Disposable) = viewModel.addDisposable(disposable)
 
     private fun println(data: String) = Log.d("MainFragment", data)
 

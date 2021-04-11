@@ -6,14 +6,11 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.ViewModelProvider
 import com.overeasy.homework.R
 import com.overeasy.homework.ViewModel
 import com.overeasy.homework.databinding.ActivityMainBinding
 
-
 class MainActivity : AppCompatActivity() {
-    private lateinit var viewModel: ViewModel
     private lateinit var binding: ActivityMainBinding
     private val mainFragment by lazy {
         MainFragment()

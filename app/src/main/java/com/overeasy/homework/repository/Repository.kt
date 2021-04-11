@@ -1,6 +1,5 @@
 package com.overeasy.homework.repository
 
-import androidx.lifecycle.MutableLiveData
 import com.overeasy.homework.pojo.Post
 import com.overeasy.homework.repository.network.Client
 
@@ -9,19 +8,19 @@ class Repository {
         Client()
     }
 
-    fun getDataPosts(start: Int) = client.getDataPosts(start)
+    fun getPosts(start: Int) = client.getPosts(start)
 
-    fun getDataComments(post: Post) = client.getDataComments(post)
+    fun getComments(id: Int) = client.getComments(id)
 
-    fun updatePost(post: Post) = client.updatePost(post)
+    fun updatePost(id: Int, post: Post) = client.updatePost(id, post)
 
-    fun deletePost(post: Post) = client.deletePost(post)
+    fun deletePost(id: Int) = client.deletePost(id)
 
-    fun getPosts() = client.getPosts()
+    /* fun getPosts() = client.getPosts()
 
     fun getDetailDatas() = client.getDetailDatas()
 
     fun getDeleteResult() = client.getDeleteResult()
 
-    fun getUpdateResult() = client.getUpdateResult()
+    fun getUpdateResult() = client.getUpdateResult() */
 }

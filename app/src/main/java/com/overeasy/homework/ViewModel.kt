@@ -1,53 +1,93 @@
 package com.overeasy.homework
 
-import android.app.Application
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import com.overeasy.homework.pojo.Comment
 import com.overeasy.homework.pojo.Post
 import com.overeasy.homework.repository.Repository
-import io.reactivex.rxjava3.subjects.PublishSubject
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 
 class ViewModel : ViewModel() {
-    val publishSubject: PublishSubject<Post> = PublishSubject.create()
-    val publishSubjectUpdate: PublishSubject<Post> = PublishSubject.create()
-    val publishSubjectDelete: PublishSubject<Post> = PublishSubject.create()
+    private lateinit var post: Post
+    private val compositeDisposable = CompositeDisposable()
+    private val posts = MutableLiveData<ArrayList<Post>>()
+    private val detailDatas = MutableLiveData<ArrayList<Any>>()
+    private val deleteResult = MutableLiveData<Int>()
+    private val updateResult = MutableLiveData<ArrayList<Any>>()
     private val repository: Repository by lazy {
         Repository()
     }
 
     init {
         getDataPosts(0)
-        publishSubject.subscribe { post ->
-            getDataComments(post)
-        }
-        publishSubjectUpdate.subscribe { post ->
-            updatePost(post)
-        }
-        publishSubjectDelete.subscribe { post ->
-            deletePost(post)
-        }
     }
 
-    fun getPosts() = repository.getPosts()
+    override fun onCleared() {
+        compositeDisposable.dispose()
+        super.onCleared()
+    }
 
-    fun getDetailDatas() = repository.getDetailDatas()
+    private fun getDataPosts(start: Int) = addDisposable(repository.getPosts(start)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                    { posts.postValue(it.body()) },
+                    { println("response error in deletePost: ${it.message}")}
+            ))
 
-    fun getDeleteResult() = repository.getDeleteResult()
+    fun getDataComments(post: Post) {
+        this.post = post
 
-    fun getUpdateResult() = repository.getUpdateResult()
+        addDisposable(repository.getComments(post.id.toDouble().toInt())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        {
+                            val tempList = ArrayList<Any>()
+                            tempList.add(it.body() as ArrayList<Comment>)
+                            tempList.add(post)
+                            detailDatas.postValue(tempList)
+                        },
+                        { println("response error in updatePost: ${it.message}") }
+                ))
+    }
+
+    fun updatePost(post: Post) = addDisposable(repository.updatePost(post.id.toDouble().toInt(), post)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                    {
+                        val tempList = ArrayList<Any>()
+                        tempList.add(it.body() as Post)
+                        tempList.add(it.code())
+                        updateResult.postValue(tempList)
+                    },
+                    { println("response error in updatePost: ${it.message}")}
+            ))
+
+    fun deletePost(id: String) = addDisposable(repository.deletePost(id.toDouble().toInt())
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                    { deleteResult.postValue(it.code()) },
+                    { println("response error in deletePost: ${it.message}")}
+            ))
+
+    fun getPosts() = posts
+
+    fun getDetailDatas() = detailDatas
+
+    fun getDeleteResult() = deleteResult
+
+    fun getUpdateResult() = updateResult
 
     fun scrollLoad(page: Int) = getDataPosts(page * 10)
 
-    private fun getDataPosts(start: Int) = repository.getDataPosts(start)
-
-    private fun getDataComments(post: Post) = repository.getDataComments(post)
-
-    private fun updatePost(post: Post) = repository.updatePost(post)
-
-    private fun deletePost(post: Post) = repository.deletePost(post)
+    fun addDisposable(disposable: Disposable) = compositeDisposable.add(disposable)
 
     private fun println(data: String) = Log.d("ViewModel", data)
 }
