@@ -41,8 +41,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun init() {
-        viewModel = ViewModelProvider(this, ViewModel.Factory(application)).get(ViewModel::class.java)
-
         supportFragmentManager
             .beginTransaction()
             .add(R.id.constraintLayout, mainFragment)

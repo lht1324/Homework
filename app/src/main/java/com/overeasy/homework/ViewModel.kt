@@ -10,18 +10,12 @@ import com.overeasy.homework.pojo.Post
 import com.overeasy.homework.repository.Repository
 import io.reactivex.rxjava3.subjects.PublishSubject
 
-class ViewModel(application: Application) : ViewModel() {
+class ViewModel : ViewModel() {
     val publishSubject: PublishSubject<Post> = PublishSubject.create()
     val publishSubjectUpdate: PublishSubject<Post> = PublishSubject.create()
     val publishSubjectDelete: PublishSubject<Post> = PublishSubject.create()
     private val repository: Repository by lazy {
         Repository()
-    }
-
-    class Factory(private val application: Application) : ViewModelProvider.Factory {
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T{
-            return ViewModel(application) as T
-        }
     }
 
     init {
@@ -45,11 +39,11 @@ class ViewModel(application: Application) : ViewModel() {
 
     fun getUpdateResult() = repository.getUpdateResult()
 
+    fun scrollLoad(page: Int) = getDataPosts(page * 10)
+
     private fun getDataPosts(start: Int) = repository.getDataPosts(start)
 
     private fun getDataComments(post: Post) = repository.getDataComments(post)
-
-    fun scrollLoad(page: Int) = getDataPosts(page * 10)
 
     private fun updatePost(post: Post) = repository.updatePost(post)
 
