@@ -18,16 +18,16 @@ class Client {
     private val baseUrl = "https://jsonplaceholder.typicode.com/"
     private val posts = MutableLiveData<ArrayList<Post>>()
     private val detailDatas = MutableLiveData<ArrayList<Any>>()
-    private val responseCode = MutableLiveData<Int>()
-    private val updatedPost = MutableLiveData<Post>()
+    private val deleteResult = MutableLiveData<Int>()
+    private val updateResult = MutableLiveData<ArrayList<Any>>()
 
     fun getPosts() = posts
 
     fun getDetailDatas() = detailDatas
 
-    fun getResponseCode() = responseCode
+    fun getDeleteResult() = deleteResult
 
-    fun getUpdatedPost() = updatedPost
+    fun getUpdateResult() = updateResult
 
     fun getDataPosts(start: Int) = getData().getPostsPage(start, 10)
         .enqueue(object : retrofit2.Callback<ArrayList<Post>> {
@@ -36,40 +36,44 @@ class Client {
             }
 
             override fun onFailure(call: Call<ArrayList<Post>>, t: Throwable) {
-                println("onFailure is executed in getDataPosts() of Client.")
+                println("onFailure() is executed in getDataPosts() of Client.")
             }
         })
 
     fun getDataComments(post: Post) = getData().getComments(post.id.toDouble().toInt().toString())
         .enqueue(object : retrofit2.Callback<ArrayList<Comment>> {
             override fun onResponse(call: Call<ArrayList<Comment>>, response: Response<ArrayList<Comment>>) {
-                val detailDatasTemp = ArrayList<Any>()
-                detailDatasTemp.add(response.body() as ArrayList<Comment>)
-                detailDatasTemp.add(post)
-                detailDatas.value = detailDatasTemp
+                val tempList = ArrayList<Any>()
+                tempList.add(response.body() as ArrayList<Comment>)
+                tempList.add(post)
+
+                detailDatas.value = tempList
             }
 
             override fun onFailure(call: Call<ArrayList<Comment>>, t: Throwable) {
-                println("onFailure is executed in getDataComments() of Client.")
+                println("onFailure() is executed in getDataComments() of Client.")
             }
         })
 
     fun updatePost(post: Post) = getData().patchPost(post.id.toDouble().toInt().toString(), post)
         .enqueue(object : retrofit2.Callback<Post> {
             override fun onResponse(call: Call<Post>, response: Response<Post>) {
-                TODO("Not yet implemented")
+                val tempList = ArrayList<Any>()
+                tempList.add(response.body() as Post)
+                tempList.add(response.code())
+
+                updateResult.value = tempList
             }
 
             override fun onFailure(call: Call<Post>, t: Throwable) {
-                TODO("Not yet implemented")
+                println("onFailure() is executed in updatePost() of Client.")
             }
         })
 
     fun deletePost(post: Post) = getData().deletePost(post.id.toDouble().toInt().toString())
         .enqueue(object : retrofit2.Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                responseCode.value = response.code()
-                println("response = $response")
+                deleteResult.value = response.code()
             }
 
             override fun onFailure(call: Call<Void>, t: Throwable) {

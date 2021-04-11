@@ -12,7 +12,9 @@ import io.reactivex.rxjava3.subjects.PublishSubject
 
 class ViewModel(application: Application) : ViewModel() {
     private var page = 0
+    private val posts = ArrayList<Post>()
     val publishSubject: PublishSubject<Post> = PublishSubject.create()
+    val publishSubjectUpdate: PublishSubject<Post> = PublishSubject.create()
     val publishSubjectDelete: PublishSubject<Post> = PublishSubject.create()
     private val repository: Repository by lazy {
         Repository()
@@ -22,7 +24,9 @@ class ViewModel(application: Application) : ViewModel() {
 
     fun getDetailDatas() = repository.getDetailDatas()
 
-    fun getResponseCode() = repository.getResponseCode()
+    fun getDeleteResult() = repository.getDeleteResult()
+
+    fun getUpdateResult() = repository.getUpdateResult()
 
     private fun getDataPosts(start: Int) = repository.getDataPosts(start)
 
@@ -39,6 +43,9 @@ class ViewModel(application: Application) : ViewModel() {
         publishSubject.subscribe { post ->
             getDataComments(post)
         }
+        publishSubjectUpdate.subscribe { post ->
+            updatePost(post)
+        }
         publishSubjectDelete.subscribe { post ->
             deletePost(post)
         }
@@ -49,7 +56,7 @@ class ViewModel(application: Application) : ViewModel() {
         getDataPosts(page * 10)
     }
 
-    fun updatePost(post: Post) = repository.updatePost(post)
+    private fun updatePost(post: Post) = repository.updatePost(post)
 
     private fun deletePost(post: Post) = repository.deletePost(post)
 

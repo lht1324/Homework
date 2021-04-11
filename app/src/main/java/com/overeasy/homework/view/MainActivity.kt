@@ -2,6 +2,7 @@ package com.overeasy.homework.view
 
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.databinding.DataBindingUtil
@@ -17,6 +18,7 @@ class MainActivity : AppCompatActivity() {
     private val mainFragment by lazy {
         MainFragment()
     }
+    private var backPressedLast: Long = 0
     // 비동기로 처리해야 할 것
     // UI 제외한 나머지
     // 네트워킹, 데이터 받아오기
@@ -30,6 +32,16 @@ class MainActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
         init()
+    }
+
+    override fun onBackPressed() {
+        if (System.currentTimeMillis() - backPressedLast < 2000) {
+            finish()
+            return
+        }
+
+        Toast.makeText(this, "종료하려면 뒤로 가기 버튼을\n한 번 더 눌러주세요.", Toast.LENGTH_SHORT).show()
+        backPressedLast = System.currentTimeMillis()
     }
 
     private fun init() {

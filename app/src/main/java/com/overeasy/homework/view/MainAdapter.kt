@@ -2,6 +2,7 @@ package com.overeasy.homework.view
 
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
@@ -15,8 +16,10 @@ class MainAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val posts by lazy {
         ArrayList<Post>()
     }
+    var updatedPosition = 0
     var page = 1 // 앱 첫 실행 시 이미 0으로 시작
     val onItemClicked = MutableLiveData<Post>()
+    val onItemLongPressed = MutableLiveData<Post>()
     val onItemSwiped = MutableLiveData<Post>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -24,9 +27,13 @@ class MainAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             viewTypeItem -> {
                 val inflater = LayoutInflater.from(parent.context)
                 val binding = ItemPostBinding.inflate(inflater, parent, false)
-                ItemViewHolder(binding, onItemClicked = { post ->
-                    onItemClicked.value = post
-                })
+                ItemViewHolder(
+                        binding,
+                        onItemClicked = { post ->
+                            onItemClicked.value = post },
+                        onItemLongPressed = { post ->
+                            onItemLongPressed.value = post }
+                )
             }
             else -> {
                 val inflater = LayoutInflater.from(parent.context)
@@ -56,7 +63,10 @@ class MainAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     inner class ItemViewHolder(
         private val binding: ItemPostBinding,
-        private val onItemClicked: (Post) -> Unit) : RecyclerView.ViewHolder(binding.root) {
+        private val onItemClicked: (Post) -> Unit,
+        private val onItemLongPressed: (Post) -> Unit) :
+            RecyclerView.ViewHolder(binding.root),
+            View.OnLongClickListener {
         fun bind(post: Post) {
             binding.post = post
             binding.viewHolder = this
@@ -64,6 +74,12 @@ class MainAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
         fun onClick(post: Post) {
             onItemClicked(post)
+        }
+
+        override fun onLongClick(view: View?): Boolean {
+            onItemLongPressed(binding.post!!)
+            println("Item ${binding.post!!.id} is pressed.")
+            return true
         }
     }
 
@@ -73,6 +89,11 @@ class MainAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         this.posts.addAll(posts)
         if (page < 10)
             this.posts.add(Post(" ", " ", " "))
+    }
+
+    fun updatePost(post: Post) {
+        posts[updatedPosition] = post
+        notifyItemChanged(updatedPosition)
     }
 
     fun stopLoading() = posts.removeAt(posts.lastIndex)

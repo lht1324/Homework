@@ -1,5 +1,7 @@
 package com.overeasy.homework.view
 
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -16,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.overeasy.homework.R
 import com.overeasy.homework.ViewModel
 import com.overeasy.homework.databinding.FragmentMainBinding
+import com.overeasy.homework.pojo.Post
 
 class MainFragment() : Fragment() {
     private lateinit var viewModel: ViewModel
@@ -88,7 +91,7 @@ class MainFragment() : Fragment() {
             }
         })
 
-        viewModel.getResponseCode().observe(viewLifecycleOwner, { responseCode ->
+        viewModel.getDeleteResult().observe(viewLifecycleOwner, { responseCode ->
             showToast(
                 if (responseCode == 200)
                     "삭제되었습니다.\n(responseCode = $responseCode)"
@@ -97,14 +100,43 @@ class MainFragment() : Fragment() {
             )
         })
 
+        viewModel.getUpdateResult().observe(viewLifecycleOwner, { updatedResult ->
+            /*
+            updatedResult[0] = response.body()
+            updatedResult[1] = response.code()
+             */
+            showToast(
+                    if (updatedResult[1] == 200)
+                        "수정되었습니다.\n(responseCode = ${updatedResult[1]})"
+                    else
+                        "수정되지 않았습니다.\n(responseCode = ${updatedResult[1]})")
+            mainAdapter.updatePost(updatedResult[0] as Post)
+        })
+
         mainAdapter.onItemClicked.observe(viewLifecycleOwner, { post ->
             viewModel.publishSubject.onNext(post)
             (activity as MainActivity).replaceDetailFragment()
         })
 
+        mainAdapter.onItemLongPressed.observe(viewLifecycleOwner, { post ->
+            openUpdateDialog(post)
+        })
+
         mainAdapter.onItemSwiped.observe(viewLifecycleOwner, { post ->
             viewModel.publishSubjectDelete.onNext(post)
         })
+    }
+
+    private fun openUpdateDialog(post: Post) {
+        val updateDialog = UpdateDialog(requireActivity())
+        updateDialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        updateDialog.post = post
+        updateDialog.setOnDismissListener {
+            mainAdapter.updatedPosition = updateDialog.post.id.toDouble().toInt() - 1
+            viewModel.publishSubjectUpdate.onNext(updateDialog.post)
+        }
+        updateDialog.setCancelable(true)
+        updateDialog.show()
     }
 
     private fun println(data: String) = Log.d("MainFragment", data)
