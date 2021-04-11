@@ -1,5 +1,6 @@
 package com.overeasy.homework.repository
 
+import android.util.Log
 import com.overeasy.homework.pojo.Post
 import com.overeasy.homework.repository.network.Client
 
@@ -16,11 +17,5 @@ class Repository {
 
     fun deletePost(id: Int) = client.deletePost(id)
 
-    /* fun getPosts() = client.getPosts()
-
-    fun getDetailDatas() = client.getDetailDatas()
-
-    fun getDeleteResult() = client.getDeleteResult()
-
-    fun getUpdateResult() = client.getUpdateResult() */
+    private fun println(data: String) = Log.d("Repository", data)
 }

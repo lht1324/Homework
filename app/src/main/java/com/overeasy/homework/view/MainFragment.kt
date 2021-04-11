@@ -21,9 +21,8 @@ import com.overeasy.homework.R
 import com.overeasy.homework.ViewModel
 import com.overeasy.homework.databinding.FragmentMainBinding
 import com.overeasy.homework.pojo.Post
-import io.reactivex.disposables.Disposable
 
-class MainFragment() : Fragment() {
+class MainFragment : Fragment() {
     private lateinit var viewModel: ViewModel
     private lateinit var binding: FragmentMainBinding
     private lateinit var callback: OnBackPressedCallback
@@ -89,7 +88,7 @@ class MainFragment() : Fragment() {
                                 viewModel.scrollLoad((mainAdapter.page)++)
                             }
                             else
-                                Toast.makeText(activity, "마지막 페이지입니다.", Toast.LENGTH_SHORT).show()
+                                showToast("마지막 페이지입니다.")
                         }
                     }
                 })
@@ -97,7 +96,6 @@ class MainFragment() : Fragment() {
         }
 
         viewModel.getPosts().observe(viewLifecycleOwner, { posts ->
-            println("getPosts() observer is executed.")
             mainAdapter.setList(posts)
             mainAdapter.notifyItemRangeInserted((mainAdapter.page - 1) * 10 + 1, 10)
             // positionStart부터 몇 개가 들어가느냐를 알리는 것이니 start는 (기존 posts의 마지막 인덱스 + 1)이어야 한다.
@@ -108,17 +106,14 @@ class MainFragment() : Fragment() {
         })
 
         viewModel.getDeleteResult().observe(viewLifecycleOwner, { responseCode ->
-            println("getDeleteResult() observer is executed.")
             showToast(
                 if (responseCode == 200)
                     "삭제되었습니다.\n(responseCode = $responseCode)"
                 else
-                    "삭제되지 않았습니다.\n(responseCode = $responseCode)"
-            )
+                    "삭제되지 않았습니다.\n(responseCode = $responseCode)")
         })
 
         viewModel.getUpdateResult().observe(viewLifecycleOwner, { updatedResult ->
-            println("getUpdateResult() observer is executed.")
             /*
             updatedResult[0] = response.body()
             updatedResult[1] = response.code()
@@ -149,10 +144,13 @@ class MainFragment() : Fragment() {
     private fun openUpdateDialog(post: Post) {
         val updateDialog = UpdateDialog(requireActivity())
         updateDialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        updateDialog.post = post
+        updateDialog.post = Post(post.id, post.title, post.body)
+        // post를 그대로 대입하면 updateDialog.post의 내용이 post에 복사된다.
+        // 원인 발견 못 함.
+        // Rx로 교체 후 발생했는데 정확한 원인은 찾지 못했다.
 
         updateDialog.setOnDismissListener {
-            if (post.title != updateDialog.post.title && post.body != updateDialog.post.body) {
+            if (post.title != updateDialog.post.title || post.body != updateDialog.post.body) {
                 mainAdapter.updatedPosition = updateDialog.post.id.toDouble().toInt() - 1
                 viewModel.updatePost(updateDialog.post)
             } // 내용을 바꾸지 않고 꾹 누르기만 한 경우 제외
@@ -161,8 +159,6 @@ class MainFragment() : Fragment() {
         updateDialog.setCancelable(true)
         updateDialog.show()
     }
-
-    fun addDisposable(disposable: Disposable) = viewModel.addDisposable(disposable)
 
     private fun println(data: String) = Log.d("MainFragment", data)
 

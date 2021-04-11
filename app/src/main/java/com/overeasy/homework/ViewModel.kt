@@ -12,7 +12,6 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 
 class ViewModel : ViewModel() {
-    private lateinit var post: Post
     private val compositeDisposable = CompositeDisposable()
     private val posts = MutableLiveData<ArrayList<Post>>()
     private val detailDatas = MutableLiveData<ArrayList<Any>>()
@@ -35,13 +34,11 @@ class ViewModel : ViewModel() {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                    { posts.postValue(it.body()) },
-                    { println("response error in deletePost: ${it.message}")}
+                    { posts.value = it.body() },
+                    { println("response error in getDataPosts(): ${it.message}")}
             ))
 
     fun getDataComments(post: Post) {
-        this.post = post
-
         addDisposable(repository.getComments(post.id.toDouble().toInt())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -50,9 +47,9 @@ class ViewModel : ViewModel() {
                             val tempList = ArrayList<Any>()
                             tempList.add(it.body() as ArrayList<Comment>)
                             tempList.add(post)
-                            detailDatas.postValue(tempList)
+                            detailDatas.value = tempList
                         },
-                        { println("response error in updatePost: ${it.message}") }
+                        { println("response error in getDataComments(): ${it.message}") }
                 ))
     }
 
@@ -64,17 +61,17 @@ class ViewModel : ViewModel() {
                         val tempList = ArrayList<Any>()
                         tempList.add(it.body() as Post)
                         tempList.add(it.code())
-                        updateResult.postValue(tempList)
+                        updateResult.value = tempList
                     },
-                    { println("response error in updatePost: ${it.message}")}
+                    { println("response error in updatePost(): ${it.message}")}
             ))
 
     fun deletePost(id: String) = addDisposable(repository.deletePost(id.toDouble().toInt())
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                    { deleteResult.postValue(it.code()) },
-                    { println("response error in deletePost: ${it.message}")}
+                    { deleteResult.value = it.code() },
+                    { println("response error in deletePost(): ${it.message}")}
             ))
 
     fun getPosts() = posts
@@ -87,7 +84,7 @@ class ViewModel : ViewModel() {
 
     fun scrollLoad(page: Int) = getDataPosts(page * 10)
 
-    fun addDisposable(disposable: Disposable) = compositeDisposable.add(disposable)
+    private fun addDisposable(disposable: Disposable) = compositeDisposable.add(disposable)
 
     private fun println(data: String) = Log.d("ViewModel", data)
 }

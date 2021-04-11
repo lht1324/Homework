@@ -3,7 +3,6 @@ package com.overeasy.homework.repository.network
 import com.overeasy.homework.pojo.Comment
 import com.overeasy.homework.pojo.Post
 import io.reactivex.Single
-import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.*
 

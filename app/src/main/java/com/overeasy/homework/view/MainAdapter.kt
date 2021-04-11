@@ -30,9 +30,9 @@ class MainAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 ItemViewHolder(
                         binding,
                         onItemClicked = { post ->
-                            onItemClicked.postValue(post) },
+                            onItemClicked.value = post },
                         onItemLongPressed = { post ->
-                            onItemLongPressed.postValue(post) }
+                            onItemLongPressed.value = post }
                 )
             }
             else -> {
@@ -91,6 +91,7 @@ class MainAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     }
 
     fun updatePost(post: Post) {
+        println("updatePost() in mainAdapter is executed.")
         posts[updatedPosition] = post
         notifyItemChanged(updatedPosition)
     }
@@ -98,8 +99,7 @@ class MainAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     fun stopLoading() = posts.removeAt(posts.lastIndex)
 
     fun onSwiped(position: Int) {
-        println("onSwiped() is executed.")
-        onItemSwiped.postValue(posts[position].id)
+        onItemSwiped.value = posts[position].id
         posts.removeAt(position)
         notifyItemRemoved(position)
     }

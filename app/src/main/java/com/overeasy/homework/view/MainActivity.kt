@@ -7,7 +7,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.databinding.DataBindingUtil
 import com.overeasy.homework.R
-import com.overeasy.homework.ViewModel
 import com.overeasy.homework.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {

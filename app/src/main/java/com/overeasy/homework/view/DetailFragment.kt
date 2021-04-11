@@ -28,6 +28,7 @@ class DetailFragment : Fragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_detail, container, false)
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+
         setHasOptionsMenu(true)
 
         init()
@@ -75,7 +76,6 @@ class DetailFragment : Fragment() {
             recyclerView.layoutManager = LinearLayoutManager(activity)
             recyclerView.addItemDecoration(RecyclerViewDecoration(30))
         }
-        // Observable.merge로 Post랑 Comments 동시에 묶어서 열어야 하나?
 
         viewModel.getDetailDatas().observe(viewLifecycleOwner, { detailDatas ->
             detailAdapter.comments = detailDatas[0] as ArrayList<Comment>
@@ -86,7 +86,6 @@ class DetailFragment : Fragment() {
                 }
                 constraintLayout.visibility = View.VISIBLE
                 post = detailDatas[1] as Post
-                recyclerView.adapter = detailAdapter
             }
         })
     }
