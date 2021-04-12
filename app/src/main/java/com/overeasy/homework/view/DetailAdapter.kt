@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.overeasy.homework.databinding.ItemCommentBinding
 import com.overeasy.homework.pojo.Comment
 
+// 디테일 뷰 내부의 리사이클러뷰에 사용되는 어댑터
 class DetailAdapter : RecyclerView.Adapter<DetailAdapter.ViewHolder>() {
     var comments = ArrayList<Comment>()
 

@@ -18,8 +18,14 @@ class MainActivity : AppCompatActivity() {
     private var backPressedLast: Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // SplashTheme에서 AppTheme로 교체
+        setTheme(R.style.AppTheme)
+
         super.onCreate(savedInstanceState)
+
+        // 다크 모드 해제
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+
         setContentView(R.layout.activity_main)
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
@@ -27,7 +33,11 @@ class MainActivity : AppCompatActivity() {
         init()
     }
 
-    fun onBackPressedFragment() {
+    /*
+    MainFragment에서 사용할 수 있도록 override 하지 않았다.
+    뒤로 가기를 2번 누르면 앱이 종료된다.
+     */
+    fun onBackPressedMainFragment() {
         if (System.currentTimeMillis() - backPressedLast < 2000) {
             finish()
             return
@@ -44,7 +54,8 @@ class MainActivity : AppCompatActivity() {
             .commit()
     }
 
-    fun replaceDetailFragment() {
+    // DetailFragment로 전환
+    fun changeToDetailFragment() {
         supportActionBar!!.title = "Post"
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
@@ -56,7 +67,8 @@ class MainActivity : AppCompatActivity() {
                 .commit()
     }
 
-    fun replaceMainFragment() {
+    // MainFragment로 전환
+    fun changeToMainFragment() {
         supportActionBar!!.title = "Lorem Ipsum"
         supportActionBar!!.setDisplayHomeAsUpEnabled(false)
 
@@ -68,5 +80,6 @@ class MainActivity : AppCompatActivity() {
                 .commit()
     }
 
+    // 로그 출력
     private fun println(data: String) = Log.d("MainActivity", data)
 }

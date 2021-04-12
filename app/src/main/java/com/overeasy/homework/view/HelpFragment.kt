@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import com.overeasy.homework.R
 import com.overeasy.homework.databinding.FragmentHelpBinding
 
+// HelpActivity에서 사용되는 프래그먼트
 class HelpFragment(
         private val description: String) : Fragment() {
     private lateinit var binding: FragmentHelpBinding

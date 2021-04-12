@@ -1,19 +1,14 @@
 package com.overeasy.homework.view
 
-
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.MutableLiveData
 import androidx.viewpager2.widget.ViewPager2
 import com.overeasy.homework.R
 import com.overeasy.homework.databinding.ActivityHelpBinding
 
-
+// 도움말 화면 액티비티
 class HelpActivity : AppCompatActivity() {
     private lateinit var binding: ActivityHelpBinding
     private val pagerAdapter by lazy {
@@ -21,6 +16,8 @@ class HelpActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // HelpActivity에서도 테마를 AppTheme로 변경해야 한다.
+        setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_help)
@@ -33,26 +30,31 @@ class HelpActivity : AppCompatActivity() {
     override fun onBackPressed() = finish()
 
     private fun init() {
+        // 액션 바 숨기기
         supportActionBar!!.hide()
 
+        // 프래그먼트 생성
         pagerAdapter.fragments.add(HelpFragment("아이템을 터치하면\n댓글을 볼 수 있습니다."))
         pagerAdapter.fragments.add(HelpFragment("아이템을 꾹 누르면\n내용을 바꿀 수 있습니다."))
         pagerAdapter.fragments.add(HelpFragment("아이템을 밀면\n삭제됩니다."))
 
         binding.apply {
-            // 페이지 변경 시 페이지 수도 변경
-            viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-                override fun onPageSelected(position: Int) {
-                    super.onPageSelected(position)
-                    textView.text = (viewPager.currentItem + 1).toString()
-                }
-            })
+            viewPager.apply {
+                // 페이지 변경 시 페이지 수도 변경
+                registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+                    override fun onPageSelected(position: Int) {
+                        super.onPageSelected(position)
+                        textView.text = (viewPager.currentItem + 1).toString()
+                    }
+                })
 
-            viewPager.adapter = pagerAdapter
+                adapter = pagerAdapter
+            }
 
-
+            // 완료 버튼 ( ✓ )
             buttonSkip.setOnClickListener { finish() }
 
+            // 다음 버튼 ( > )
             buttonNext.setOnClickListener {
                 val position = viewPager.currentItem
 
@@ -60,7 +62,7 @@ class HelpActivity : AppCompatActivity() {
                 if (position < pagerAdapter.fragments.size) {
                     viewPager.setCurrentItem(position + 1, true)
                 }
-                // 마지막 페이지면 MainActivity로 복귀
+                // 마지막 페이지면 HelpActivity 종료
                 if (position == pagerAdapter.fragments.size - 1)
                     finish()
             }
@@ -70,6 +72,6 @@ class HelpActivity : AppCompatActivity() {
         }
     }
 
-    // 로그 확인용
+    // 로그 출력
     fun println(data: String) = Log.d("HelpActivity", data)
 }

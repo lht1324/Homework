@@ -17,5 +17,6 @@ class Repository {
 
     fun deletePost(id: Int) = client.deletePost(id)
 
+    // 로그 출력
     private fun println(data: String) = Log.d("Repository", data)
 }
