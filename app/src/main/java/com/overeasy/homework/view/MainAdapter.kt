@@ -91,7 +91,6 @@ class MainAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     }
 
     fun updatePost(post: Post) {
-        println("updatePost() in mainAdapter is executed.")
         posts[updatedPosition] = post
         notifyItemChanged(updatedPosition)
     }

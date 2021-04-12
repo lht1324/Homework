@@ -2,4 +2,6 @@
     <string name="app_name">Lorem Ipsum</string>
     <string name="title" >Title</string>
     <string name="comment">Comment</string>
+    <string name="help">도움말</string>
+    <string name="skip">✓</string>
 </resources>

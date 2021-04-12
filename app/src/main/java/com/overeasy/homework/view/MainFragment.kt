@@ -1,13 +1,12 @@
 package com.overeasy.homework.view
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.databinding.DataBindingUtil
@@ -33,6 +32,8 @@ class MainFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_main, container, false)
 
+        setHasOptionsMenu(true)
+
         init()
 
         return binding.root
@@ -50,6 +51,21 @@ class MainFragment : Fragment() {
     override fun onDetach() {
         super.onDetach()
         callback.remove()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        menu.clear()
+        inflater.inflate(R.menu.option_menu, menu)
+        return super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        super.onOptionsItemSelected(item)
+
+        if (item.itemId == R.id.help)
+            startActivity(Intent(activity, HelpActivity::class.java))
+
+        return true
     }
 
     private fun init() {
