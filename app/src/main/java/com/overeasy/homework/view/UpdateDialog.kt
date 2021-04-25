@@ -2,6 +2,8 @@ package com.overeasy.homework.view
 
 import android.app.Dialog
 import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -60,7 +62,11 @@ class UpdateDialog(private val mContext: Context) : Dialog(mContext) {
             dimAmount = 0.5f
         }
 
-        window!!.attributes = layoutParams
+        window!!.apply {
+            attributes = layoutParams
+            setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        }
+
         updateDialog = this
     }
 }

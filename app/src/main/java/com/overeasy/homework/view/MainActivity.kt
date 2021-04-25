@@ -30,7 +30,11 @@ class MainActivity : AppCompatActivity() {
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
-        init()
+        if (savedInstanceState == null)
+            supportFragmentManager
+                    .beginTransaction()
+                    .add(R.id.constraintLayout, mainFragment)
+                    .commit()
     }
 
     /*

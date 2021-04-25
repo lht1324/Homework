@@ -41,10 +41,7 @@ class DetailFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        /*
-        프래그먼트가 열렸을 때 기존 데이터를 보여주기 때문에
-        새로운 데이터를 받아올 때까지 레이아웃을 숨긴다.
-         */
+        // 프래그먼트가 열렸을 때 기존 데이터를 보여주기 때문에 새로운 데이터를 받아올 때까지 레이아웃을 숨긴다.
         binding.constraintLayout.visibility = View.GONE
 
         // onResume 동안 프로그레스 바 보여주기
@@ -54,10 +51,7 @@ class DetailFragment : Fragment() {
         }
     }
 
-    /*
-    뒤로 가기 버튼을 누를 때 액티비티의 onBackPressed가 아니라
-    MainActivity로 돌아가는 기능 실행하는 콜백 초기화
-     */
+    // 뒤로 가기 버튼을 누를 때 액티비티의 onBackPressed가 아니라 MainActivity로 돌아가는 기능 실행하는 콜백 초기화
     override fun onAttach(context: Context) {
         super.onAttach(context)
         callback = object : OnBackPressedCallback(true) {
@@ -95,10 +89,10 @@ class DetailFragment : Fragment() {
          */
         viewModel = ViewModelProvider(activity as ViewModelStoreOwner).get(ViewModel::class.java)
 
-        binding.apply {
-            recyclerView.adapter = detailAdapter
-            recyclerView.layoutManager = LinearLayoutManager(activity)
-            recyclerView.addItemDecoration(RecyclerViewDecoration(30))
+        binding.recyclerView.apply {
+            adapter = detailAdapter
+            layoutManager = LinearLayoutManager(activity)
+            addItemDecoration(RecyclerViewDecoration(30))
         }
 
         // ViewModel의 detailDatas() (Post + ArrayList<Comment>)를 관찰한다.

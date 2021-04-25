@@ -44,11 +44,24 @@ class MainFragment : Fragment() {
     // 뒤로 가기 버튼 누를 때 MainActivity의 onBackPressedMainFragment() 실행
     override fun onAttach(context: Context) {
         super.onAttach(context)
+
         callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 (activity as MainActivity).onBackPressedMainFragment()
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                (activity as MainActivity).onBackPressedMainFragment()
+            }
+        }
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
     }
 
     // onBackPressedCallback 삭제
@@ -75,7 +88,7 @@ class MainFragment : Fragment() {
     }
 
     private fun init() {
-        // viewLifecycleOwner의 사용은 onCreateView 이후부터 가능하니 init()에서 실행
+        // viewLifecycleOwner의 사용은 onCreateView() 이후부터 가능하니 init()에서 실행
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
         // '밀어서 삭제' 구현을 위한 ItemTouchHelper
@@ -89,6 +102,11 @@ class MainFragment : Fragment() {
                 viewHolder: RecyclerView.ViewHolder,
                 direction: Int
             ) = mainAdapter.onSwiped(viewHolder.adapterPosition)
+
+            override fun getSwipeDirs(
+                    recyclerView: RecyclerView,
+                    viewHolder: RecyclerView.ViewHolder) = if (!mainAdapter.swipeControl) 0
+                else super.getSwipeDirs(recyclerView, viewHolder)
         }).attachToRecyclerView(binding.recyclerView)
 
         /*
@@ -115,10 +133,11 @@ class MainFragment : Fragment() {
                         super.onScrolled(recyclerView, dx, dy)
 
                         if (!recyclerView.canScrollVertically(1)) { // 끝까지 스크롤 했을 때
+                            // 무한 스크롤 로딩 중 아이템을 삭제하면 튕긴다
                             // 데이터가 100개 있으니 10페이지를 넘기면 (10개 * 10페이지 = 100개) 프로그레스 바가 출력되지 않도록 제한을 건다.
                             if (mainAdapter.page < 10) {
-                                mainAdapter.stopLoading()
                                 viewModel.scrollLoad((mainAdapter.page)++)
+                                mainAdapter.stopLoading()
                             }
                             else
                                 showToast("마지막 페이지입니다.")
@@ -131,6 +150,7 @@ class MainFragment : Fragment() {
         // Client에서 posts를 받아오면 posts가 변동된다
         viewModel.getPosts().observe(viewLifecycleOwner, { posts ->
             mainAdapter.setList(posts)
+            mainAdapter.swipeControl = true
 
             // positionStart부터 몇 개가 들어가느냐를 알리는 것이니 start는 (기존 posts의 마지막 인덱스 + 1)이어야 한다.
             mainAdapter.notifyItemRangeInserted((mainAdapter.page - 1) * 10 + 1, 10)
@@ -191,10 +211,9 @@ class MainFragment : Fragment() {
     // 아이템이 길게 눌렸을 때 Dialog를 연다.
     private fun openUpdateDialog(post: Post) {
         val updateDialog = UpdateDialog(requireActivity())
-        updateDialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
         /*
-        post를 그대로 대입하면 updateDialog.post의 내용이 post에 복사된다.
+        post를 그대로 대입하면 updateDialog.post의 내용이 post에 복사되기만 하고 UI가 업데이트 되지 않는다.
         원인 발견 못 함.
         Rx로 교체 후 발생했는데 정확한 원인은 찾지 못했다.
          */

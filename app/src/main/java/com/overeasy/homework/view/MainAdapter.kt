@@ -17,6 +17,7 @@ class MainAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private val posts by lazy {
         ArrayList<Post>()
     }
+    var swipeControl = true
     var updatedPosition = 0
     var page = 1 // 앱 첫 실행 시 이미 0으로 시작
     val onItemClicked = MutableLiveData<Post>()
@@ -106,7 +107,10 @@ class MainAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     }
 
     // 무한 스크롤 도중 아이템을 받아오면 프로그레스 바를 보여주는 아이템을 삭제한다.
-    fun stopLoading() = posts.removeAt(posts.lastIndex)
+    fun stopLoading() {
+        swipeControl = false
+        posts.removeAt(posts.lastIndex)
+    }
 
     // 아이템을 옆으로 밀었을 때 어댑터 내부 리스트에서 아이템을 삭제한다
     fun onSwiped(position: Int) {
