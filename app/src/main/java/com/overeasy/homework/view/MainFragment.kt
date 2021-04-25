@@ -109,10 +109,7 @@ class MainFragment : Fragment() {
                 else super.getSwipeDirs(recyclerView, viewHolder)
         }).attachToRecyclerView(binding.recyclerView)
 
-        /*
-        viewModel을 MainFragment와 DetailFragment에서 공유하기 위해
-        ViewModelStoreOwner를 activity로 설정
-         */
+        // viewModel을 MainFragment와 DetailFragment에서 공유하기 위해 ViewModelStoreOwner를 activity로 설정
         viewModel = ViewModelProvider(activity as ViewModelStoreOwner).get(ViewModel::class.java)
 
         binding.apply {
@@ -133,7 +130,6 @@ class MainFragment : Fragment() {
                         super.onScrolled(recyclerView, dx, dy)
 
                         if (!recyclerView.canScrollVertically(1)) { // 끝까지 스크롤 했을 때
-                            // 무한 스크롤 로딩 중 아이템을 삭제하면 튕긴다
                             // 데이터가 100개 있으니 10페이지를 넘기면 (10개 * 10페이지 = 100개) 프로그레스 바가 출력되지 않도록 제한을 건다.
                             if (mainAdapter.page < 10) {
                                 viewModel.scrollLoad((mainAdapter.page)++)
@@ -149,11 +145,13 @@ class MainFragment : Fragment() {
 
         // Client에서 posts를 받아오면 posts가 변동된다
         viewModel.getPosts().observe(viewLifecycleOwner, { posts ->
-            mainAdapter.setList(posts)
-            mainAdapter.swipeControl = true
+            mainAdapter.apply {
+                setList(posts)
+                swipeControl = true
 
-            // positionStart부터 몇 개가 들어가느냐를 알리는 것이니 start는 (기존 posts의 마지막 인덱스 + 1)이어야 한다.
-            mainAdapter.notifyItemRangeInserted((mainAdapter.page - 1) * 10 + 1, 10)
+                // positionStart부터 몇 개가 들어가느냐를 알리는 것이니 start는 (기존 posts의 마지막 인덱스 + 1)이어야 한다.
+                notifyItemRangeInserted((page - 1) * 10 + 1, 10)
+            }
 
             // 앱을 처음 실행할 때 어댑터의 posts에 새로운 데이터가 들어오면 프로그레스 바를 종료한다.
             if (mainAdapter.page == 1) {
